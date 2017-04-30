@@ -25,10 +25,6 @@ path.chord {
 
 </style>
 
-<header>
-  <aside>Shiva Thudi</aside>
-</header>
-
 <h1>Domestic Flights by City</h1>
 
 <aside>Mouseover to focus on flights to or from a single city.
@@ -141,11 +137,11 @@ function ready(error, cities, matrix) {
 
   // Add an elaborate mouseover title for each chord.
   chord.append("title").text(function(d) {
-    return cities[d.source.index].name
-        + " → " + cities[d.target.index].name
+    return cities[d.source.index].ORIGIN
+        + " → " + cities[d.target.index].ORIGIN
         + ": " + formatPercent(d.source.value)
-        + "\n" + cities[d.target.index].name
-        + " → " + cities[d.source.index].name
+        + "\n" + cities[d.target.index].ORIGIN
+        + " → " + cities[d.source.index].ORIGIN
         + ": " + formatPercent(d.target.value);
   });
 
@@ -161,5 +157,5 @@ function ready(error, cities, matrix) {
 
 <p class="attribution">Source: <a href="https://bost.ocks.org/mike/">Mike Bostock's blocks</a>.
 
-<p>Credits for this chord diagram go to Mike Bostock, one of the creators of D3.js. He developed a chord diagram example on uber rides by neighborhood which is the inspiration for this one.<p>
+<p>Credits for this chord diagram go to Mike Bostock, one of the creators of D3.js. He developed a chord diagram on Uber rides by neighborhood which is the inspiration for this one.<p>
 
