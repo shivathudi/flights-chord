@@ -23,20 +23,36 @@ path.chord {
   display: none;
 }
 
+/* Legend Font Style */
+body {
+  font: 12px sans-serif;
+}
+        
+/* Legend Position Style */
+.legend {
+  font: 11px sans-serif;
+  position:absolute;
+  left:-40px;
+  top:120px;
+}
+
+
 </style>
 
 <h1>Domestic Flights by City</h1>
 
-<aside>Mouseover to focus on flights to or from a single city.
-
-<p>The thickness of links be&shy;tween cities encodes the relative frequency of flights between two cities: thicker links represent more frequent flights.
+<aside>Mouseover to focus on flights to or from a single city. The top 30 airports are displayed, and the smaller airports and cities are grouped into the "Other Cities" category.
 
 <p>The cities are colored by their timezone: for example, Atlanta and Boston both fall under the Eastern Time Zone, while Los Angeles and Seattle fall under the Pacific Time Zone.
 
+<p>The thickness of links be&shy;tween cities encodes the relative frequency of flights between two cities: thicker links represent more frequent flights.
+
 <p>Links are directed: for exam&shy;ple, while 2.84% of flights go from Atlanta to Other Cities, 2.89% go in the opposite direction. Links are colored by the more fre&shy;quent origin.
 
-<p>Built with <a href="http://d3js.org/">D3</a>.</aside>
 
+
+<p>Built with <a href="http://d3js.org/">D3</a>.</aside>
+<body>
 <script src="lib/d3.js" charset="utf-8"></script>
 <script src="lib/queue.js"></script>
 <script>
@@ -57,6 +73,12 @@ var layout = d3.layout.chord()
     .sortSubgroups(d3.descending)
     .sortChords(d3.ascending);
 
+var color_s = d3.scale.linear()
+        .range(["#FF7F00","#377EB8","#F781BF","#A0522D", "#984EA3", "#4DAF4A"]);
+
+var legendText = ["Eastern Time", "Central Time", "Mountain Time", "Pacific Time", "Hawaii Time", "Other Cities"];
+
+
 var path = d3.svg.chord()
     .radius(innerRadius);
 
@@ -67,8 +89,32 @@ var svg = d3.select("body").append("svg")
     .attr("id", "circle")
     .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
 
+
 svg.append("circle")
     .attr("r", outerRadius);
+
+color_s.domain([0, 1, 2, 3, 4, 5])
+
+var legend = d3.select("body").append("svg")
+      .attr("class", "legend")
+      .attr("width", 140)
+      .attr("height", 200)
+    .selectAll("g")
+      .data(color_s.domain().slice())
+    .enter().append("g")
+      .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
+
+  legend.append("rect")
+      .attr("width", 18)
+      .attr("height", 18)
+      .style("fill", color_s);
+
+  legend.append("text")
+  .data(legendText)
+      .attr("x", 24)
+      .attr("y", 9)
+      .attr("dy", ".35em")
+      .text(function(d) { return d; });
 
 queue()
     .defer(d3.csv, 'flights-airports.csv')
@@ -77,6 +123,7 @@ queue()
 
 function ready(error, cities, matrix) {
   if (error) throw error;
+
 
   // Compute the chord layout.
   layout.matrix(matrix);
@@ -113,19 +160,7 @@ function ready(error, cities, matrix) {
   groupText.filter(function(d, i) { return groupPath[0][i].getTotalLength() / 2 - 28 < this.getComputedTextLength(); })
       .remove();
 
-// group.append("svg:text")
-//             .each(function(d) { d.angle = (d.startAngle + d.endAngle) / 2; })
-//             .attr("dy", ".35em")
-//             .style("font-family", "helvetica, arial, sans-serif")
-//             .style("font-size", "9px")
-//             .attr("text-anchor", function(d) { return d.angle > Math.PI ? "end" : null; })
-//             .attr("transform", function(d) {
-//               return "rotate(" + (d.angle * 180 / Math.PI - 90) + ")"
-//                   + "translate(" + (r0 + 26) + ")"
-//                   + (d.angle > Math.PI ? "rotate(180)" : "");
-//             })
-//             .text(function(d, i) { return cities[i].name; });
-
+  
 
   // Add the chords.
   var chord = svg.selectAll(".chord")
@@ -151,10 +186,12 @@ function ready(error, cities, matrix) {
           && p.target.index != i;
     });
   }
+
 }
 
-</script>
 
+</script>
+</body>
 <p class="attribution">Source: <a href="https://bost.ocks.org/mike/">Mike Bostock's blocks</a>.
 
 <p>Credits for this chord diagram go to Mike Bostock, one of the creators of D3.js. He developed a chord diagram on Uber rides by neighborhood which is the inspiration for this one.<p>
